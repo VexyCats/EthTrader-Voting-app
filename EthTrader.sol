@@ -158,6 +158,7 @@ contract EthTrader is usingOraclize, owned{
   
     function withdraw() public onlyWinners {
         uint256 payout = (balance.div(totalWinners));
+        balance = balance.sub(payout);
         msg.sender.transfer(payout);
         PayoutSent(payout, msg.sender);
         
