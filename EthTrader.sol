@@ -52,7 +52,10 @@ library SafeMath {
 contract owned {
     address public owner;
 
- 
+    function owned() {
+        owner = msg.sender;
+    }
+    
     modifier onlyOwner {
         require(msg.sender == owner);
         _;
@@ -74,7 +77,8 @@ contract EthTrader is usingOraclize, owned{
    
     mapping (address => bool) public hasUserVoted;
     mapping (address => bool) public listOfWinners;
-    Partcipant[] public players;
+    mapping (uint => Partcipant) player;
+    
     
     uint256 public totalGuesses;
     uint256 public winningTime;
@@ -114,10 +118,12 @@ contract EthTrader is usingOraclize, owned{
     
     function makeGuess(uint256 _userGuess) public returns(bool){
         require(hasUserVoted[msg.sender] == false);
-        require(1529782083 < _userGuess && _userGuess < 1600000000);
+        require((1529782083 < _userGuess) && (_userGuess < 1600000000));
             hasUserVoted[msg.sender] = true;
-            totalGuesses.add(1);
-            players[totalGuesses] = Partcipant({timestamp: _userGuess, winnersAddress: msg.sender, guessNumber: totalGuesses });
+            totalGuesses = totalGuesses.add(1);
+            player[totalGuesses].timestamp = _userGuess;
+            player[totalGuesses].winnersAddress = msg.sender;
+            player[totalGuesses].guessNumber = totalGuesses;
             SomebodyGuessed(msg.sender, _userGuess, totalGuesses);
             return true;
     }
@@ -159,10 +165,10 @@ contract EthTrader is usingOraclize, owned{
     function _winnerCheck() internal returns (bool) {
         
          for(uint temp = 0; temp < totalGuesses; temp++){
-           if(players[temp].timestamp == winningTime.add(86400) || players[temp].timestamp == winningTime.sub(86400)){
+           if(player[temp].timestamp == winningTime.add(86400) || player[temp].timestamp == winningTime.sub(86400)){
                totalWinners.add(1);
-               WinnerAnnounced(players[temp].winnersAddress, balance);
-               listOfWinners[players[temp].winnersAddress] = true;
+               WinnerAnnounced(player[temp].winnersAddress, balance);
+               listOfWinners[player[temp].winnersAddress] = true;
                
            }
            
