@@ -100,11 +100,7 @@ contract EthTrader is usingOraclize, owned{
     event OraclizeResult(string message, uint result, uint timestamp);
     event WinnerAnnounced(address winner, uint amount);
 
-    
-    struct StringAndInt {
-        string stringComponent;
-        int intComponent;
-    }
+   
 
     function EthTrader() {
         owner = msg.sender;
